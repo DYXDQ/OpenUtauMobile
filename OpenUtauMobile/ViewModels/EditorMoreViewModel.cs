@@ -9,6 +9,7 @@ public enum EditorMoreAction
 {
     None, // 无操作
     ImportAudio, // 导入音频
+    SeparateAudio, // Demucs 分离音频
     ImportTrack, // 导入轨道
     ExportAudio, // 导出音频
     SaveAsTemplate, // 保存为模板

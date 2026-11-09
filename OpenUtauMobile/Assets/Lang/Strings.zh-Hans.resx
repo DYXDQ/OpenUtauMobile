@@ -1090,6 +1090,9 @@
   <data name="EditorMore.ImportAudio" xml:space="preserve">
     <value>导入音频</value>
   </data>
+  <data name="EditorMore.SeparateAudio" xml:space="preserve">
+    <value>Demucs 分离音频</value>
+  </data>
   <data name="EditorMore.ImportMIDI" xml:space="preserve">
     <value>导入 MIDI</value>
   </data>
@@ -1098,6 +1101,27 @@
   </data>
   <data name="EditorMore.ExportAudio" xml:space="preserve">
     <value>导出为音频</value>
+  </data>
+  <data name="Demucs.SelectAudio" xml:space="preserve">
+    <value>请先选中一个音频片段</value>
+  </data>
+  <data name="Demucs.DependencyMissing" xml:space="preserve">
+    <value>未找到 Demucs 依赖包，请先安装包含 demucs.yaml 的 .oudep</value>
+  </data>
+  <data name="Demucs.AudioUnreadable" xml:space="preserve">
+    <value>无法读取选中的音频</value>
+  </data>
+  <data name="Demucs.Separating" xml:space="preserve">
+    <value>正在进行 Demucs 分离</value>
+  </data>
+  <data name="Demucs.Success" xml:space="preserve">
+    <value>已生成 {0} 条分离音轨</value>
+  </data>
+  <data name="Demucs.Completed" xml:space="preserve">
+    <value>分离完成，正在创建音轨</value>
+  </data>
+  <data name="Demucs.NoOutput" xml:space="preserve">
+    <value>Demucs 没有输出音频</value>
   </data>
   <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
     <value>TODO: 导出音频功能</value>

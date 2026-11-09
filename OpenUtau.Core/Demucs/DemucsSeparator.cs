@@ -6,6 +6,7 @@ using System.Threading;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using OpenUtau.Core.Util;
+using NAudio.Wave;
 
 namespace OpenUtau.Core.Demucs;
 
@@ -76,6 +77,7 @@ public sealed class DemucsSeparator : IDisposable
         {
             throw new ArgumentNullException(nameof(interleavedSamples));
         }
+
         if (interleavedSamples.Length % channels != 0)
         {
             throw new ArgumentException($"Audio must contain {channels} interleaved channels.", nameof(interleavedSamples));
@@ -134,6 +136,18 @@ public sealed class DemucsSeparator : IDisposable
         return config.sources
             .Select((name, index) => new KeyValuePair<string, float[]>(name, outputs[index]))
             .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase);
+    }
+
+    public static void WriteWave(string path, float[] samples, int sampleRate, int channels)
+    {
+        if (samples.Length % channels != 0)
+        {
+            throw new ArgumentException("Audio samples do not align with the channel count.", nameof(samples));
+        }
+
+        Directory.CreateDirectory(Path.GetDirectoryName(path) ?? ".");
+        using var writer = new WaveFileWriter(path, WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channels));
+        writer.WriteSamples(samples, 0, samples.Length);
     }
 
     private float[,,] Infer(float[] interleavedSamples, int frames)

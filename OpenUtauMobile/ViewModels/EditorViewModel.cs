@@ -814,6 +814,9 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             case EditorMoreAction.ImportAudio:
                 _ = ImportAudio();
                 break;
+            case EditorMoreAction.SeparateAudio:
+                _ = SeparateSelectedAudioAsync();
+                break;
             case EditorMoreAction.ImportTrack:
                 await ImportTracksAsync();
                 break;
