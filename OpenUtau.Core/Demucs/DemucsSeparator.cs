@@ -45,16 +45,8 @@ public sealed class DemucsSeparator : IDisposable
         }
 
         session = Onnx.getInferenceSession(modelPath);
-        inputName = string.IsNullOrWhiteSpace(config.input_name)
-            ? session.InputMetadata.Keys.Single()
-            : config.input_name;
-        outputName = string.IsNullOrWhiteSpace(config.output_name)
-            ? session.OutputMetadata.Keys.Single()
-            : config.output_name;
-        if (!session.InputMetadata.ContainsKey(inputName) || !session.OutputMetadata.ContainsKey(outputName))
-        {
-            throw new InvalidDataException("demucs.yaml refers to an unknown ONNX input or output.");
-        }
+        inputName = ResolveTensorName(session.InputMetadata.Keys, config.input_name, "input");
+        outputName = ResolveTensorName(session.OutputMetadata.Keys, config.output_name, "output");
 
         channels = GetChannelCount(session.InputMetadata[inputName].Dimensions);
     }
@@ -68,8 +60,12 @@ public sealed class DemucsSeparator : IDisposable
         return new DemucsSeparator(Path.Combine(PathManager.Inst.DependencyPath, name));
     }
 
+    /// <summary>
+    /// 分离交错排列的立体声（或与模型一致的声道数）采样，按配置的源名称返回同长度交错采样。
+    /// </summary>
     public IReadOnlyDictionary<string, float[]> Separate(
         float[] interleavedSamples,
+        int audioChannels,
         CancellationToken cancellationToken = default,
         IProgress<double>? progress = null)
     {
@@ -78,30 +74,50 @@ public sealed class DemucsSeparator : IDisposable
             throw new ArgumentNullException(nameof(interleavedSamples));
         }
 
-        if (interleavedSamples.Length % channels != 0)
+        if (audioChannels <= 0 || interleavedSamples.Length % audioChannels != 0)
         {
-            throw new ArgumentException($"Audio must contain {channels} interleaved channels.", nameof(interleavedSamples));
+            throw new ArgumentException($"Audio must contain {audioChannels} interleaved channels.", nameof(interleavedSamples));
+        }
+
+        if (audioChannels != channels)
+        {
+            throw new ArgumentException(
+                $"Demucs expects {channels} channels but the audio has {audioChannels}.", nameof(audioChannels));
         }
 
         int inputFrames = interleavedSamples.Length / channels;
-        int segmentFrames = Math.Max(1, (int)Math.Round(config.segment_seconds * config.sample_rate));
+        if (inputFrames == 0)
+        {
+            return config.sources
+                .Select(name => new KeyValuePair<string, float[]>(name, []))
+                .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase);
+        }
+
+        int segmentFrames = GetSegmentFrames();
         int hopFrames = Math.Max(1, (int)Math.Round(segmentFrames * (1 - config.overlap)));
-        int segmentCount = Math.Max(1, (int)Math.Ceiling(Math.Max(1, inputFrames - segmentFrames) / (double)hopFrames) + 1);
+        int segmentCount = Math.Max(1, (int)Math.Ceiling(Math.Max(0, inputFrames - segmentFrames) / (double)hopFrames) + 1);
         var outputs = config.sources.Select(_ => new float[inputFrames * channels]).ToArray();
         var weights = new double[inputFrames];
+        float[] chunk = new float[segmentFrames * channels];
 
-        for (int segmentIndex = 0, start = 0; segmentIndex < segmentCount; segmentIndex++, start += hopFrames)
+        for (int segmentIndex = 0; segmentIndex < segmentCount; segmentIndex++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            int frames = Math.Min(segmentFrames, Math.Max(0, inputFrames - start));
-            float[] chunk = new float[segmentFrames * channels];
-            Array.Copy(interleavedSamples, start * channels, chunk, 0, frames * channels);
+            // 以片段中心对齐：首尾片段向两侧补静音，避免开头和结尾被淡入淡出压低。
+            int start = segmentIndex * hopFrames;
+            int frame = 0;
+            for (; frame < segmentFrames && start + frame < inputFrames; frame++)
+            {
+                Array.Copy(interleavedSamples, (start + frame) * channels, chunk, frame * channels, channels);
+            }
+            Array.Clear(chunk, frame * channels, (segmentFrames - frame) * channels);
             float[,,] separated = Infer(chunk, segmentFrames);
 
-            for (int frame = 0; frame < frames; frame++)
+            double[] gains = BuildWindow(segmentFrames, start, inputFrames);
+            for (frame = 0; frame < segmentFrames && start + frame < inputFrames; frame++)
             {
                 int destinationFrame = start + frame;
-                double weight = HannWeight(frame, segmentFrames);
+                double weight = gains[frame];
                 weights[destinationFrame] += weight;
                 for (int source = 0; source < outputs.Length; source++)
                 {
@@ -114,10 +130,6 @@ public sealed class DemucsSeparator : IDisposable
             }
 
             progress?.Report((segmentIndex + 1) * 100.0 / segmentCount);
-            if (start + segmentFrames >= inputFrames)
-            {
-                break;
-            }
         }
 
         for (int frame = 0; frame < inputFrames; frame++)
@@ -152,6 +164,13 @@ public sealed class DemucsSeparator : IDisposable
 
     private float[,,] Infer(float[] interleavedSamples, int frames)
     {
+        int[] dimensions = session.InputMetadata[inputName].Dimensions;
+        if (dimensions.Length == 4 && dimensions[2] > 0 && dimensions[2] != channels)
+        {
+            throw new InvalidDataException(
+                $"Demucs ONNX input expects {dimensions[2]} channels but the audio has {channels}.");
+        }
+
         var input = new DenseTensor<float>(GetInputShape(frames));
         for (int frame = 0; frame < frames; frame++)
         {
@@ -212,9 +231,65 @@ public sealed class DemucsSeparator : IDisposable
         };
     }
 
-    private static double HannWeight(int index, int length)
+    private static string ResolveTensorName(IEnumerable<string> names, string configured, string kind)
     {
-        return length <= 1 ? 1 : Math.Max(1e-3, 0.5 - 0.5 * Math.Cos(2 * Math.PI * index / (length - 1)));
+        if (!string.IsNullOrWhiteSpace(configured))
+        {
+            return names.Contains(configured)
+                ? configured
+                : throw new InvalidDataException($"demucs.yaml refers to an unknown ONNX {kind}: {configured}");
+        }
+        string[] available = names.ToArray();
+        return available.Length == 1
+            ? available[0]
+            : throw new InvalidDataException($"The Demucs ONNX model has {available.Length} {kind}s; set {kind}_name in demucs.yaml.");
+    }
+
+    /// <summary>片段长度取自模型固定形状，配置值仅在模型为动态长度时使用；过长的片段按配置值切分。</summary>
+    private int GetSegmentFrames()
+    {
+        int configured = Math.Max(1, (int)Math.Round(config.segment_seconds * config.sample_rate));
+        int[] dimensions = session.InputMetadata[inputName].Dimensions;
+        int axis = dimensions.Length switch
+        {
+            3 => 2,
+            4 => 3,
+            _ => throw new InvalidDataException("Demucs ONNX input must have rank 3 or 4.")
+        };
+        return dimensions[axis] > 0 ? dimensions[axis] : configured;
+    }
+
+    /// <summary>
+    /// 片段加权窗：中间为 1，两侧按汉宁窗渐入渐出；音频首尾处不衰减，边界帧且不从头尾
+    /// 起算的片段也保持全权重，使任意重叠比例下每个采样点都有非零权重。
+    /// </summary>
+    private static double[] BuildWindow(int segmentFrames, int start, int inputFrames)
+    {
+        var gains = new double[segmentFrames];
+        for (int i = 0; i < segmentFrames; i++)
+        {
+            gains[i] = Math.Min(FadeIn(i), FadeOut(segmentFrames - 1 - i));
+        }
+        if (start == 0)
+        {
+            gains[0] = 1;
+        }
+        if (start + segmentFrames >= inputFrames)
+        {
+            gains[segmentFrames - 1] = 1;
+        }
+        return gains;
+    }
+
+    private static double FadeIn(int index)
+    {
+        // 首个采样直接满权重，避免把音频第一个采样压到 0。
+        return index <= 0 ? 1 : 0.5 - 0.5 * Math.Cos(Math.PI * index / 64.0);
+    }
+
+    private static double FadeOut(int remaining)
+    {
+        return remaining <= 0 ? 1 : 0.5 - 0.5 * Math.Cos(Math.PI * remaining / 64.0);
     }
 
     private static void ValidateConfig(DemucsConfig value)

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -2588,4 +2588,18 @@ Applying replaces the source of this input.</value></data>
   <data name="Editor.Repeat" xml:space="preserve"><value>Repeat</value></data>
   <data name="Editor.Record" xml:space="preserve"><value>Record</value></data>
   <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: Recording</value></data>
+  <data name="EditorMore.SeparateAudio" xml:space="preserve"><value>Separate Audio (Demucs)</value></data>
+  <data name="Demucs.SelectAudio" xml:space="preserve"><value>Select a single audio part first</value></data>
+  <data name="Demucs.DependencyMissing" xml:space="preserve"><value>No Demucs dependency found. Install a .oudep package containing demucs.yaml first.</value></data>
+  <data name="Demucs.AudioUnreadable" xml:space="preserve"><value>The selected audio cannot be read</value></data>
+  <data name="Demucs.Separating" xml:space="preserve"><value>Separating audio with Demucs</value></data>
+  <data name="Demucs.Success" xml:space="preserve"><value>Created {0} separated tracks</value></data>
+  <data name="Demucs.Completed" xml:space="preserve"><value>Separation finished, creating tracks</value></data>
+  <data name="Demucs.NoOutput" xml:space="preserve"><value>Demucs produced no output</value></data>
+  <data name="Demucs.AlreadyRunning" xml:space="preserve"><value>Demucs is already separating audio, please wait</value></data>
+  <data name="Demucs.UnsupportedChannels" xml:space="preserve"><value>{0}-channel audio is not supported; use mono or stereo audio</value></data>
+  <data name="Demucs.EmptyAudio" xml:space="preserve"><value>The selected part contains no audio to separate</value></data>
+  <data name="Editor.Action.SeparateAudio" xml:space="preserve"><value>Separate audio</value></data>
+  <data name="Demucs.Writing" xml:space="preserve"><value>Writing separated tracks…</value></data>
+  <data name="Demucs.NeedDependency" xml:space="preserve"><value>Install a Demucs dependency package in Dependency Manager first</value></data>
 </root>

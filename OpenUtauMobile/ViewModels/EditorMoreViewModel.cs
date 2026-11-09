@@ -1,5 +1,6 @@
 ﻿using System.Reactive;
 using OpenUtau.Core;
+using OpenUtau.Core.Demucs;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 
@@ -23,6 +24,9 @@ public class EditorMoreViewModel : PopupViewModelBase
 {
     public bool CanUndo => !DocManager.Inst.HasOpenUndoGroup && DocManager.Inst.GetUndoState(out _);
     public bool CanRedo => !DocManager.Inst.HasOpenUndoGroup && DocManager.Inst.GetRedoState(out _);
+
+    /// <summary>已安装带 demucs.yaml 的依赖包时才允许分离音频，未安装时按钮置灰。</summary>
+    public bool CanSeparateAudio => DemucsDependencyLocator.HasDependency();
 
     private bool _mergeNearbyPhrases = Preferences.Default.DiffSingerMergeNearbyPhrases;
 

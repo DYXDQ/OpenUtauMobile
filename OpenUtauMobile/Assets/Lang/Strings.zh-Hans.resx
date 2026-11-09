@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1117,6 +1117,10 @@
   <data name="Demucs.Success" xml:space="preserve">
     <value>已生成 {0} 条分离音轨</value>
   </data>
+  <data name="Demucs.AlreadyRunning" xml:space="preserve"><value>Demucs 正在分离音频，请稍候</value></data>
+  <data name="Demucs.UnsupportedChannels" xml:space="preserve"><value>暂不支持 {0} 声道的音频，请使用单声道或立体声音频</value></data>
+  <data name="Demucs.EmptyAudio" xml:space="preserve"><value>选中的片段没有可分离的音频</value></data>
+  <data name="Editor.Action.SeparateAudio" xml:space="preserve"><value>分离音频</value></data>
   <data name="Demucs.Completed" xml:space="preserve">
     <value>分离完成，正在创建音轨</value>
   </data>
@@ -2612,4 +2616,7 @@
   <data name="Editor.Repeat" xml:space="preserve"><value>重复</value></data>
   <data name="Editor.Record" xml:space="preserve"><value>录制</value></data>
   <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: 录制功能</value></data>
+  <data name="DependencyManager.LoadingTimeout" xml:space="preserve"><value>无法连接依赖索引服务器：{0}。请检查网络，或使用可从文件安装的 .oudep 包；GitHub 访问受限时可尝试网络代理。</value></data>
+  <data name="Demucs.Writing" xml:space="preserve"><value>正在写出分离音轨……</value></data>
+  <data name="Demucs.NeedDependency" xml:space="preserve"><value>请先在依赖项管理中安装 Demucs 依赖包</value></data>
 </root>

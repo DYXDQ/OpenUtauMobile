@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     xmlns="https://github.com/avaloniaui"
     xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
     xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
@@ -107,6 +107,8 @@
                                         HorizontalAlignment="Stretch"
                                         MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
                                         Content="{DynamicResource EditorMore.SeparateAudio}"
+                                        IsEnabled="{Binding CanSeparateAudio}"
+                                        ToolTip.Tip="{DynamicResource Demucs.NeedDependency}"
                                         Command="{Binding ConfirmCommand}">
                                         <Button.CommandParameter>
                                             <vm:EditorMoreAction>SeparateAudio</vm:EditorMoreAction>

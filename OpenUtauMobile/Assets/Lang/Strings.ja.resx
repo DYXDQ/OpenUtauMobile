@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -2584,4 +2584,18 @@ Applying replaces the source of this input.</value></data>
   <data name="Editor.Repeat" xml:space="preserve"><value>リピート</value></data>
   <data name="Editor.Record" xml:space="preserve"><value>録音</value></data>
   <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: 録音機能</value></data>
+  <data name="EditorMore.SeparateAudio" xml:space="preserve"><value>音声を分離 (Demucs)</value></data>
+  <data name="Demucs.SelectAudio" xml:space="preserve"><value>先に音声パートを 1 つ選択してください</value></data>
+  <data name="Demucs.DependencyMissing" xml:space="preserve"><value>Demucs 依存パッケージが見つかりません。demucs.yaml を含む .oudep を先にインストールしてください</value></data>
+  <data name="Demucs.AudioUnreadable" xml:space="preserve"><value>選択した音声を読み取れません</value></data>
+  <data name="Demucs.Separating" xml:space="preserve"><value>Demucs で音声を分離しています</value></data>
+  <data name="Demucs.Success" xml:space="preserve"><value>{0} 本の分離トラックを作成しました</value></data>
+  <data name="Demucs.Completed" xml:space="preserve"><value>分離が完了しました。トラックを作成しています</value></data>
+  <data name="Demucs.NoOutput" xml:space="preserve"><value>Demucs の出力がありません</value></data>
+  <data name="Demucs.AlreadyRunning" xml:space="preserve"><value>Demucs が分離処理中です。しばらくお待ちください</value></data>
+  <data name="Demucs.UnsupportedChannels" xml:space="preserve"><value>{0} チャンネルの音声には対応していません。モノラルまたはステレオを使用してください</value></data>
+  <data name="Demucs.EmptyAudio" xml:space="preserve"><value>選択したパートに分離できる音声がありません</value></data>
+  <data name="Editor.Action.SeparateAudio" xml:space="preserve"><value>音声を分離</value></data>
+  <data name="Demucs.Writing" xml:space="preserve"><value>分離したトラックを書き出しています…</value></data>
+  <data name="Demucs.NeedDependency" xml:space="preserve"><value>先に依存関係マネージャーで Demucs 依存パッケージをインストールしてください</value></data>
 </root>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
+using System.Net.Http;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -203,9 +204,12 @@ public class DependencyManagerViewModel : NavigateViewModelBase, IDisposable
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 if (_disposed) return;
-                RegistryError = ex.Message;
+                // 网络不可达（尤其 GitHub 受限）时给出可操作提示，而不是只显示异常原文。
+                RegistryError = ex is HttpRequestException or TaskCanceledException or OperationCanceledException
+                    ? string.Format(L.S("DependencyManager.LoadingTimeout"), ex.Message)
+                    : ex.Message;
                 if (OpenUtauMobile.Services.ServiceHub.DesktopWindowContext == null)
-                    ToastService.Enqueue(string.Format(L.S("DependencyManager.Toast.LoadFailed"), ex.Message));
+                    ToastService.Enqueue(string.Format(L.S("DependencyManager.Toast.LoadFailed"), RegistryError));
             });
         }
         finally

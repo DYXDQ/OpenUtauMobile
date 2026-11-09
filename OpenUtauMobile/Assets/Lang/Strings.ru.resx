@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:schema id="root">
     <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -2543,4 +2543,18 @@ Applying replaces the source of this input.</value></data>
   <data name="Editor.Repeat" xml:space="preserve"><value>Повтор</value></data>
   <data name="Editor.Record" xml:space="preserve"><value>Запись</value></data>
   <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: Запись</value></data>
+  <data name="EditorMore.SeparateAudio" xml:space="preserve"><value>Разделить аудио (Demucs)</value></data>
+  <data name="Demucs.SelectAudio" xml:space="preserve"><value>Сначала выберите один аудиофрагмент</value></data>
+  <data name="Demucs.DependencyMissing" xml:space="preserve"><value>Зависимость Demucs не найдена. Сначала установите пакет .oudep с demucs.yaml.</value></data>
+  <data name="Demucs.AudioUnreadable" xml:space="preserve"><value>Не удалось прочитать выбранное аудио</value></data>
+  <data name="Demucs.Separating" xml:space="preserve"><value>Разделение аудио с помощью Demucs</value></data>
+  <data name="Demucs.Success" xml:space="preserve"><value>Создано дорожек: {0}</value></data>
+  <data name="Demucs.Completed" xml:space="preserve"><value>Разделение завершено, создание дорожек</value></data>
+  <data name="Demucs.NoOutput" xml:space="preserve"><value>Demucs не вернул результат</value></data>
+  <data name="Demucs.AlreadyRunning" xml:space="preserve"><value>Demucs уже разделяет аудио, подождите</value></data>
+  <data name="Demucs.UnsupportedChannels" xml:space="preserve"><value>Аудио с {0} каналами не поддерживается; используйте моно или стерео</value></data>
+  <data name="Demucs.EmptyAudio" xml:space="preserve"><value>В выбранном фрагменте нет аудио для разделения</value></data>
+  <data name="Editor.Action.SeparateAudio" xml:space="preserve"><value>Разделить аудио</value></data>
+  <data name="Demucs.Writing" xml:space="preserve"><value>Запись разделённых дорожек…</value></data>
+  <data name="Demucs.NeedDependency" xml:space="preserve"><value>Сначала установите пакет зависимости Demucs в менеджере зависимостей</value></data>
 </root>
